@@ -1,39 +1,57 @@
 package com.imooc.miaosha.controller;
 
-import com.imooc.miaosha.result.CodeMsg;
+import com.imooc.miaosha.domain.User;
+import com.imooc.miaosha.redis.RedisConfig;
+import com.imooc.miaosha.redis.RedisService;
+import com.imooc.miaosha.redis.UserKey;
 import com.imooc.miaosha.result.Result;
+import com.imooc.miaosha.service.UserService;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @description: 一定要写注释啊
- * @date: 2018-12-14 01:05
+ * @date: 2018-12-14 22:08
  * @author: 十一
  */
 @Controller
-@RequestMapping("/demo")
 public class DemoController {
 
-//    @GetMapping("/hello")
-//    @ResponseBody
-//    public Result<String> hello() {
-//        return Result.success("hello");
-//    }
+    @Autowired
+    private UserService userService;
 
-    @GetMapping("/hello-error")
-    @ResponseBody
-    public Result<String> error() {
-        return Result.error(CodeMsg.SERVER_ERROR);
+    @Autowired
+    RedisService redisService;
+
+
+    @RequestMapping("/thymeleaf")
+    public String thymeleaf() {
+        return "test";
     }
 
-    @RequestMapping("/")
-    public String testThymeleaf(ModelMap modelMap){
-        modelMap.addAttribute("msg", "Hello dalaoyang , this is thymeleaf");
-        return "thymeleaf";
+    @RequestMapping("/user/{id}")
+    @ResponseBody
+    public Result<User> findUser(@PathVariable Integer id) {
+        User user = userService.findById(id);
+        return new Result<User>(user);
+    }
+
+    @RequestMapping("/redis/get")
+    @ResponseBody
+    public Result<String> redisGet() {
+        String key1 = redisService.get(UserKey.getById,"1", String.class);
+        return Result.success(key1);
+    }
+
+    @RequestMapping("/redis/set")
+    @ResponseBody
+    public Result<Boolean> redisSet() {
+        User user = new User(1,"xiao liu");
+        boolean f = redisService.set(UserKey.getById,"1",user);
+        return Result.success(f);
     }
 }
