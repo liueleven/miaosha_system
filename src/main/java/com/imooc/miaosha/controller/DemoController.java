@@ -5,12 +5,15 @@ import com.imooc.miaosha.redis.RedisConfig;
 import com.imooc.miaosha.redis.RedisService;
 import com.imooc.miaosha.redis.UserKey;
 import com.imooc.miaosha.result.Result;
+import com.imooc.miaosha.service.MiaoshaUser;
 import com.imooc.miaosha.service.UserService;
+import com.imooc.miaosha.vo.LoginVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -50,6 +53,18 @@ public class DemoController {
     @RequestMapping("/redis/set")
     @ResponseBody
     public Result<Boolean> redisSet() {
+        User user = new User(1,"xiao liu");
+        boolean f = redisService.set(UserKey.getById,"1",user);
+        return Result.success(f);
+    }
+
+
+    @RequestMapping("/validator/email")
+    @ResponseBody
+    public Result<Boolean> validatorEmail(@RequestParam String email) {
+        LoginVo loginVo = new LoginVo();
+        loginVo.setEmail(email);
+
         User user = new User(1,"xiao liu");
         boolean f = redisService.set(UserKey.getById,"1",user);
         return Result.success(f);
